@@ -30,7 +30,7 @@ tokenizer = AutoTokenizer.from_pretrained(pretrained_model)
 class QADataset(Dataset):
     def __init__(self, data_path):
         self.data = []
-        with open(data_path, "r") as f:
+        with open(data_path, "r", encoding='utf-8') as f:
             for line in f:
                 self.data.append(json.loads(line))
 
@@ -84,7 +84,7 @@ def collate_fn(batch):
         batched_data["labels"].append(lables)
 
     for k, v in batched_data.items():
-        batched_data[k] = torch.tensor(np.array(v))
+        batched_data[k] = torch.tensor(np.array(v), dtype=torch.long)
     return batched_data
 
 
@@ -95,7 +95,7 @@ def plot_metrics(value, name):
     plt.xlabel("Batch")
     plt.ylabel(f"{name}")
     plt.title(f"{name}")
-    plt.savefig(f"log/{name}.png")
+    plt.savefig(f"./log/{name}.png")
 
 
 def evaluate_model(data_loader):
@@ -168,8 +168,8 @@ def train():
     # 设置 bos_token 为 cls_token，这个 tokenizer 默认是没有 bos_token 的， 而 cls_token 是有的且在当前任务中没有用
     tokenizer.bos_token = tokenizer.cls_token
 
-    train_dataset = QADataset("./data/DuReaderQG/train.json")
-    eval_dataset = QADataset("./data/DuReaderQG/dev.json")
+    train_dataset = QADataset("./DuReaderQG/train.json")
+    eval_dataset = QADataset("./DuReaderQG/dev.json")
     print("train dataset size: ", len(train_dataset))
     print("eval dataset size: ", len(eval_dataset))
 
