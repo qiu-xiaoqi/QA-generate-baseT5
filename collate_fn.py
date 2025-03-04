@@ -1,5 +1,6 @@
 import torch
 import numpy as np
+from transformers import AutoTokenizer
 
 def collate_fn(batch, tokenizer, max_source_len, max_target_len):
     batched_data = {
@@ -26,12 +27,23 @@ def collate_fn(batch, tokenizer, max_source_len, max_target_len):
         batched_data["labels"].append(labels)
         
     for k, v in batched_data.items():
-        lengths = [len(item) for item in v]
-        if len(set(lengths)) != 1:
-            print(f"Inconsistent lengths for {k}: {lengths}")
-        
         batched_data[k] = torch.tensor(np.array(v), dtype=torch.long)
     return batched_data
 
+if __name__ == "__main__":
+    tokenizer = AutoTokenizer.from_pretrained("./uer/t5-base-chinese-cluecorpussmall")
 
+    test_batch = [
+        ("This is a test input sequence 1.", "This is the corresponding output 1."),
+        ("Another test input sequence 2.", "Another corresponding output 2."),
+        ("Short input.", "Short output."),
+        ("A very very long input sequence that should be truncated.", "A very very long output sequence that should be truncated.")
+    ]
+    
+    max_source_len = 128
+    max_target_len = 64
 
+    batched_data = collate_fn(test_batch, tokenizer, max_source_len, max_target_len)
+    
+    for key, value in batched_data.items():
+        print(f"{key}: {value.shape}")

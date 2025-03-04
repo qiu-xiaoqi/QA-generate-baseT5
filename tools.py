@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
 import torch
+import numpy as np
 
 def plot_metrics(value, name):
     plt.figure()

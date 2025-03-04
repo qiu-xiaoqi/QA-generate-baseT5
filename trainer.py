@@ -75,8 +75,8 @@ class Trainer:
                 self.best_bleu4 = bleu_scores[3]
                 torch.save(self.model.state_dict(), f"{self.save_path}/best_model.pth")
         
-        # 训练结束后绘制曲线
-        self.plot_metrics()
+            # 训练结束后绘制曲线
+            self.plot_metrics()
     def plot_metrics(self):
         # 绘制损失曲线
         plt.figure()
