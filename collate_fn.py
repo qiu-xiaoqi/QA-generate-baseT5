@@ -10,7 +10,7 @@ def collate_fn(batch, tokenizer, max_source_len, max_target_len):
     }
     for _, (input_seq, output_seq) in enumerate(batch):
         # tokenize输入
-        inputs = tokenizer(text=input_seq, truncation=True, max_length=max_source_len, padding=True)
+        inputs = tokenizer(text=input_seq, truncation=True, max_length=max_source_len, padding='max_length')
        
         # tokenize输出,并将输出的ids作为inputs的label
         output_ids = tokenizer.encode(text=output_seq, truncation=True, max_length=max_target_len)
@@ -26,7 +26,11 @@ def collate_fn(batch, tokenizer, max_source_len, max_target_len):
         batched_data["labels"].append(labels)
         
     for k, v in batched_data.items():
-        batched_data[k] = torch.tensor(np.array(v))
+        lengths = [len(item) for item in v]
+        if len(set(lengths)) != 1:
+            print(f"Inconsistent lengths for {k}: {lengths}")
+        
+        batched_data[k] = torch.tensor(np.array(v), dtype=torch.long)
     return batched_data
 
 
